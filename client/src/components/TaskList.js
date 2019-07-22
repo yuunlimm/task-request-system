@@ -6,6 +6,12 @@ import { getTasks, deleteTask } from "../actions/taskActions";
 import PropTypes from "prop-types";
 
 class TaskList extends Component {
+  static propTypes = {
+    getTasks: PropTypes.func.isRequired,
+    task: PropTypes.object.isRequired,
+    isAuthenticated: PropTypes.bool
+  };
+
   componentDidMount() {
     this.props.getTasks();
   }
@@ -23,15 +29,17 @@ class TaskList extends Component {
             {tasks.map(({ _id, username, description }) => (
               <CSSTransition key={_id} timeout={500} classNames="fade">
                 <ListGroupItem>
-                  <Button
-                    className="remove-btn"
-                    color="danger"
-                    size="sm"
-                    onClick={this.onDeleteClick.bind(this, _id)}
-                  >
-                    &times;
-                  </Button>
-                  {username}
+                  {this.props.isAuthenticated ? (
+                    <Button
+                      className="remove-btn"
+                      color="danger"
+                      size="sm"
+                      onClick={this.onDeleteClick.bind(this, _id)}
+                    >
+                      &times;
+                    </Button>
+                  ) : null}
+                  {username} {description}
                 </ListGroupItem>
               </CSSTransition>
             ))}
@@ -42,14 +50,10 @@ class TaskList extends Component {
   }
 }
 
-TaskList.propTypes = {
-  getTasks: PropTypes.func.isRequired,
-  task: PropTypes.object.isRequired
-};
-
 // same name where you defined in reducer.
 const mapStateToProps = state => ({
-  task: state.task
+  task: state.task,
+  isAuthenticated: state.auth.isAuthenticated
 });
 
 export default connect(

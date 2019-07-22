@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../../middleware/auth");
 
 // Bringing task model
 const Task = require("../../models/task");
 
 // @route GET api/tasks
 // @desc Geall all tasks
-// @access public
+// @access
 router.get("/", (req, res) => {
   // fetch all the items in the database.
   Task.find()
@@ -14,7 +15,8 @@ router.get("/", (req, res) => {
     .then(items => res.json(items));
 });
 
-router.post("/", (req, res) => {
+// private
+router.post("/", auth, (req, res) => {
   const newTask = new Task({
     username: req.body.username,
     description: req.body.description
@@ -24,8 +26,8 @@ router.post("/", (req, res) => {
 
 // @route DELETE api/items/:id
 // @desc Delete a task
-// @access public
-router.delete("/:id", (req, res) => {
+// @access private
+router.delete("/:id", auth, (req, res) => {
   Task.findById(req.params.id)
     .then(task => task.remove().then(() => res.json({ success: true })))
     .catch(err => res.statsu(404).json({ success: false }));

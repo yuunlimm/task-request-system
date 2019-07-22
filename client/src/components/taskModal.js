@@ -13,11 +13,17 @@ import {
 import { connect } from "react-redux";
 import { addTask } from "../actions/taskActions";
 
+import PropTypes from "prop-types";
+
 class TaskModal extends Component {
   state = {
     modal: false,
     username: "",
     description: ""
+  };
+
+  static propTypes = {
+    isAuthenticated: PropTypes.bool
   };
 
   toggle = () => {
@@ -48,13 +54,17 @@ class TaskModal extends Component {
   render() {
     return (
       <div>
-        <Button
-          color="dark"
-          style={{ marginBottom: "2rem" }}
-          onClick={this.toggle}
-        >
-          Add Task
-        </Button>
+        {this.props.isAuthenticated ? (
+          <Button
+            color="dark"
+            style={{ marginBottom: "2rem" }}
+            onClick={this.toggle}
+          >
+            Add Task
+          </Button>
+        ) : (
+          <h4 className="mb-3 ml-4">Please log in to manage tasks</h4>
+        )}
         <Modal isOpen={this.state.modal} toggle={this.toggle}>
           <ModalHeader toggle={this.toggle}>Add To Task List</ModalHeader>
           <ModalBody>
@@ -90,7 +100,8 @@ class TaskModal extends Component {
 
 const mapStateToProps = state => ({
   username: state.username,
-  description: state.description
+  description: state.description,
+  isAuthenticated: state.auth.isAuthenticated
 });
 
 export default connect(
